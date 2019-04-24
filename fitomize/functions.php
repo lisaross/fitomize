@@ -130,6 +130,7 @@ function fit_post_type_gear() {
 		'has_archive'        => true,
 		'hierarchical'       => false,
 		'publicly_queryable' => true,
+		'menu_icon'          => 'dashicons-cart',
 		'taxonomies'         => array( 'category', 'post-tag' ),
 	);
 	register_post_type( 'gear', $args );
@@ -141,11 +142,74 @@ add_action( 'init', 'fit_post_type_gear' );
  *
  * @since 0.1.0
  */
-function fit_add_tags_categories() {
+function fit_add_gear_tags_categories() {
 	register_taxonomy_for_object_type( 'category', 'gear' );
 	register_taxonomy_for_object_type( 'post_tag', 'gear' );
 }
-add_action( 'init', 'fit_add_tags_categories' );
+add_action( 'init', 'fit_add_gear_tags_categories' );
+
+/*Custom Gear Post type end*/
+
+/**
+ * Create videos post type
+ *
+ * @since 0.1.0
+ */
+function fit_post_type_video() {
+
+	$supports = array(
+		'title', // post title.
+		'editor', // post content.
+		'author', // post author.
+		'thumbnail', // featured images.
+		'excerpt', // post excerpt.
+		'custom-fields', // custom fields.
+		'comments', // post comments.
+		'revisions', // post revisions.
+		'post-formats', // post formats.
+	);
+
+	$labels = array(
+		'name'           => _x( 'Videos', 'plural' ),
+		'singular_name'  => _x( 'Video', 'singular' ),
+		'menu_name'      => _x( 'Videos', 'admin menu' ),
+		'name_admin_bar' => _x( 'Video', 'admin bar' ),
+		'add_new'        => _x( 'Add New', 'add new' ),
+		'add_new_item'   => __( 'Add New Video' ),
+		'new_item'       => __( 'New Video' ),
+		'edit_item'      => __( 'Edit Video' ),
+		'view_item'      => __( 'View Video' ),
+		'all_items'      => __( 'All Videos' ),
+		'search_items'   => __( 'Search Videos' ),
+		'not_found'      => __( 'No videos found.' ),
+	);
+
+	$args = array(
+		'supports'           => $supports,
+		'labels'             => $labels,
+		'public'             => true,
+		'query_var'          => true,
+		'rewrite'            => array( 'slug' => 'video' ),
+		'has_archive'        => true,
+		'hierarchical'       => false,
+		'publicly_queryable' => true,
+		'menu_icon'          => 'dashicons-format-video',
+		'taxonomies'         => array( 'category', 'post-tag' ),
+	);
+	register_post_type( 'Video', $args );
+}
+add_action( 'init', 'fit_post_type_video' );
+
+/**
+ * Register taxonomies (tags AND categories) for gear
+ *
+ * @since 0.1.0
+ */
+function fit_add_video_tags_categories() {
+	register_taxonomy_for_object_type( 'category', 'video' );
+	register_taxonomy_for_object_type( 'post_tag', 'video' );
+}
+add_action( 'init', 'fit_add_video_tags_categories' );
 
 /*Custom Post type end*/
 
@@ -159,3 +223,23 @@ function fit_add_post_formats() {
 }
 
 add_action( 'after_setup_theme', 'fit_add_post_formats', 20 );
+
+/**
+ * Hide the divi projects post type
+ *
+ * @since 0.1.0
+ * @param mixed[] $args arguments for post type.
+ */
+function fit_et_project_posttype_args( $args ) {
+	return array_merge(
+		$args,
+		array(
+			'public'              => false,
+			'exclude_from_search' => false,
+			'publicly_queryable'  => false,
+			'show_in_nav_menus'   => false,
+			'show_ui'             => false,
+		)
+	);
+}
+add_filter( 'et_project_posttype_args', 'fit_et_project_posttype_args', 10, 1 );
