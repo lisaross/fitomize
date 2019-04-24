@@ -17,7 +17,9 @@
     "url": "https://github.com/lisaross/fitomize/issues"
   },
   "homepage": "https://github.com/lisaross/fitomize#readme",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.11"
+  },
   "devDependencies": {
     "webpack": "^4.30.0",
     "webpack-cli": "^3.3.1"
