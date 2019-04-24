@@ -29,20 +29,79 @@ remove_action( 'wp_head', 'adjacent_posts_rel_link_wp_head', 10, 0 );
 remove_action( 'wp_head', 'wp_shortlink_wp_head', 10, 0 );
 
 /**
+ * Theme setup
+ */
+add_action(
+	'after_setup_theme',
+	function () {
+		/**
+		 * Enable features from Soil when plugin is activated
+		 *
+		 * @link https://roots.io/plugins/soil/
+		 */
+		add_theme_support( 'soil-clean-up' );
+		// add_theme_support( 'soil-disable-rest-api' ); !!
+		// add_theme_support( 'soil-disable-asset-versioning' ); !!
+		add_theme_support( 'soil-disable-trackbacks' );
+		add_theme_support( 'soil-google-analytics', 'UA-XXXXX-Y' );
+		add_theme_support( 'soil-jquery-cdn' );
+		add_theme_support( 'soil-js-to-footer' );
+		add_theme_support( 'soil-nav-walker' );
+		add_theme_support( 'soil-nice-search' );
+		add_theme_support( 'soil-relative-urls' );
+		/**
+		 * Enable plugins to manage the document title
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/add_theme_support/#title-tag
+		 */
+		add_theme_support( 'title-tag' );
+		/**
+		 * Register navigation menus
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/register_nav_menus/
+		 */
+		register_nav_menus(
+			[
+				'primary_navigation' => __( 'Primary Navigation', 'mini' ),
+			]
+		);
+		/**
+		 * Enable post thumbnails
+		 *
+		 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
+		 */
+		add_theme_support( 'post-thumbnails' );
+		/**
+		 * Enable HTML5 markup support
+		 *
+		 * @link https://developer.wordpress.org/reference/functions/add_theme_support/#html5
+		 */
+		add_theme_support( 'html5', [ 'caption', 'comment-form', 'comment-list', 'gallery', 'search-form' ] );
+		/**
+		 * Enable selective refresh for widgets in customizer
+		 *
+		 * @link https://developer.wordpress.org/themes/advanced-topics/customizer-api/#theme-support-in-sidebars
+		 */
+		add_theme_support( 'customize-selective-refresh-widgets' );
+	},
+	20
+);
+
+/**
  * Enqueue child theme styles.
  *
  * Enqueues the child theme styles including version number (so it updates cache as theme changes).
  *
  * @since 0.1.0
  */
-function fitomize_enqueue_styles() {
+function fit_enqueue_styles() {
 	$parent_style = 'parent-style';
 	wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
 
 	// register webpack stylesheet with theme.
 	wp_enqueue_style( 'child-style', get_stylesheet_directory_uri() . '/css/build/main.min.css', array( $parent_style ), wp_get_theme()->get( 'Version' ) );
 }
-add_action( 'wp_enqueue_scripts', 'fitomize_enqueue_styles' );
+add_action( 'wp_enqueue_scripts', 'fit_enqueue_styles' );
 
 /**
  * Enqueue child theme scripts.
@@ -51,10 +110,40 @@ add_action( 'wp_enqueue_scripts', 'fitomize_enqueue_styles' );
  *
  * @since 0.1.0
  */
-function fitomize_enqueue_scripts() {
+function fit_enqueue_scripts() {
 	wp_enqueue_script( 'child-scripts', get_stylesheet_directory_uri() . '/js/build/app.min.js', array( 'jquery' ), wp_get_theme()->get( 'Version' ), true );
 }
-add_action( 'wp_enqueue_scripts', 'fitomize_enqueue_scripts' );
+add_action( 'wp_enqueue_scripts', 'fit_enqueue_scripts' );
+
+/**
+ * This fixes the WordPress rest-api so we can just lookup pages by their full
+ * path (not just their name). This allows us to use React Router.
+ *
+ * @param mixed $data pull in data from api.
+ * @return WP_Error|WP_REST_Response
+ */
+function get_post_for_url( $data ) {
+	$post_id    = url_to_postid( $data['url'] );
+	$post_type  = get_post_type( $post_id );
+	$controller = new WP_REST_Posts_Controller( $post_type );
+	$request    = new WP_REST_Request( 'GET', "/wp/v2/{$post_type}s/{$post_id}" );
+	$request->set_url_params( array( 'id' => $post_id ) );
+	return $controller->get_item( $request );
+}
+add_action(
+	'rest_api_init',
+	function () {
+		$namespace = 'fitomize/v1';
+		register_rest_route(
+			$namespace,
+			'/path/(?P<url>.*?)',
+			array(
+				'methods'  => 'GET',
+				'callback' => 'get_post_for_url',
+			)
+		);
+	}
+);
 
 /**
  * Disable the emoji's
@@ -90,19 +179,17 @@ function fit_disable_emojis_tinymce( $plugins ) {
 }
 
 /**
- * Load jQuery from Google API instead of local
+ * Remove dashicons for non-admin (front-end)
  *
  * @since 0.1.0
  */
-function fit_cdn_jquery() {
-	if ( ! is_admin() ) {
-		// comment out the next two lines to load the local copy of jQuery.
-		wp_deregister_script( 'jquery' );
-		wp_register_script( 'jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js', false, '1.12.4' );
-		wp_enqueue_script( 'jquery' );
+function fit_dequeue_dashicon() {
+	if ( current_user_can( 'update_core' ) ) {
+		return;
 	}
+	wp_deregister_style( 'dashicons' );
 }
-add_action( 'init', 'fit_cdn_jquery' );
+	add_action( 'wp_enqueue_scripts', 'fit_dequeue_dashicon' );
 
 /**
  * Create products post type
@@ -260,3 +347,25 @@ function fit_et_project_posttype_args( $args ) {
 	);
 }
 add_filter( 'et_project_posttype_args', 'fit_et_project_posttype_args', 10, 1 );
+
+/**
+ * Add page slug to body class
+ *
+ * @param mixed $classes get the classes.
+ * @since 0.1.0
+ */
+function fit_add_slug_to_body_class( $classes ) {
+	global $post;
+	if ( is_home() ) {
+		$key = array_search( 'blog', $classes, true );
+		if ( $key > -1 ) {
+			unset( $classes[ $key ] );
+		}
+	} elseif ( is_page() ) {
+		$classes[] = sanitize_html_class( $post->post_name );
+	} elseif ( is_singular() ) {
+		$classes[] = sanitize_html_class( $post->post_name );
+	}
+	return $classes;
+}
+add_filter( 'body_class', 'fit_add_slug_to_body_class' );
