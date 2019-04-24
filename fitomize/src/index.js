@@ -8,4 +8,6 @@ function component() {
 	return element;
 }
 
+console.log("hello, watch");
+
 document.body.appendChild(component());
