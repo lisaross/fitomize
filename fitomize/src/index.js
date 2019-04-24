@@ -1,13 +1,13 @@
-import _ from 'lodash';
+import _ from 'lodash'
 
-function component() {
-	const element = document.createElement('div');
+function component () {
+  const element = document.createElement('div')
 
-	element.innerHTML = _.join(['Hello', 'babel'], ' ');
+  element.innerHTML = _.join(['Hello', 'babel'], ' ')
 
-	return element;
+  return element
 }
 
-console.log("hello, watch");
+console.log('hello, watch')
 
-document.body.appendChild(component());
+document.body.appendChild(component())
