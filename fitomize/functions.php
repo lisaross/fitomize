@@ -19,6 +19,22 @@
  * @since 0.1.0
  */
 function fitomize_enqueue_styles() {
-	wp_enqueue_style( 'parent-style', get_template_directory_uri() . '/style.css', array(), '0.1.0' );
+	$parent_style = 'parent-style';
+	wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
+
+	// register webpack stylesheet with theme.
+	wp_enqueue_style( 'child-style', get_stylesheet_directory_uri() . '/css/build/main.min.css', array( $parent_style ), wp_get_theme()->get( 'Version' ) );
 }
 add_action( 'wp_enqueue_scripts', 'fitomize_enqueue_styles' );
+
+/**
+ * Enqueue child theme scripts.
+ *
+ * Enqueues the child theme scripts including version number (so it updates cache as theme changes).
+ *
+ * @since 0.1.0
+ */
+function fitomize_enqueue_scripts() {
+	wp_enqueue_script( 'child-scripts', get_stylesheet_directory_uri() . '/js/build/app.min.js', array( 'jquery' ), wp_get_theme()->get( 'Version' ), true );
+}
+add_action( 'wp_enqueue_scripts', 'fitomize_enqueue_scripts' );
