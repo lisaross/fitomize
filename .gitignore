@@ -1,2 +1,6 @@
 /volume/app
 /volume/db
+/fitomize/node_modules
+/fitomize/dist
+/vendor
+[Bb]uild
