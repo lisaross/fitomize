@@ -1,4 +1,5 @@
 const path = require('path')
+const webpack = require('webpack'); //to access built-in plugins
 
 // include the js minification plugin
 const TerserPlugin = require('terser-webpack-plugin')
@@ -6,6 +7,7 @@ const TerserPlugin = require('terser-webpack-plugin')
 // include the css extraction and minification plugins
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 
 module.exports = {
   entry: ['./js/src/app.js', './css/src/app.scss'],
@@ -42,7 +44,13 @@ module.exports = {
     // extract css into dedicated file
     new MiniCssExtractPlugin({
       filename: './css/build/app.min.css'
-    })
+    }),
+    new CleanWebpackPlugin({
+      verbose: true,
+      cleanStaleWebpackAssets: true,
+      protectWebpackAssets: true,
+      cleanOnceBeforeBuildPatterns: ['**/build/*', '!**/node_modules/**/build/*'],
+    }),
   ],
   optimization: {
     minimizer: [
