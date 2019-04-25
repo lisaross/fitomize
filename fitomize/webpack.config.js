@@ -13,6 +13,7 @@ module.exports = {
     filename: './js/build/app.min.js',
     path: path.resolve(__dirname)
   },
+  devtool: 'source-map',
   module: {
     rules: [
       // perform js babelization on all .js files
@@ -40,7 +41,7 @@ module.exports = {
   plugins: [
     // extract css into dedicated file
     new MiniCssExtractPlugin({
-      filename: './css/build/main.min.css'
+      filename: './css/build/app.min.css'
     })
   ],
   optimization: {
