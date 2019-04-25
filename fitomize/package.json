@@ -9,7 +9,7 @@
     "watch": "webpack --mode development --watch",
     "dev": "webpack --mode development"
   },
-  "browserlist": [
+  "browserslist": [
     "> 0.5%",
     "last 2 versions",
     "Firefox ESR",
