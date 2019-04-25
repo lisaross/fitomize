@@ -369,3 +369,68 @@ function fit_add_slug_to_body_class( $classes ) {
 	return $classes;
 }
 add_filter( 'body_class', 'fit_add_slug_to_body_class' );
+
+/**
+ * Don't load google map modules
+ *
+ * @param mixed $query get the query.
+ * @since 0.1.0
+ */
+function fit_loop_start( $query ) {
+	if ( fit_map_modules_in_excerpts( $query ) ) {
+		add_filter( 'et_pb_enqueue_google_maps_script', 'fit_return_false' );
+	}
+}
+
+/**
+ * Re-enable google maps
+ *
+ * @param mixed $query get the query.
+ * @since 0.1.0
+ */
+function fit_loop_end( $query ) {
+	if ( fit_map_modules_in_excerpts( $query ) ) {
+		remove_filter( 'et_pb_enqueue_google_maps_script', 'fit_return_false' );
+	}
+}
+
+/**
+ * Map modules in excerpts
+ *
+ * @param mixed $query get the query.
+ * @since 0.1.0
+ */
+function fit_map_modules_in_excerpts( $query ) {
+
+	// Don't affect admin.
+	if ( is_admin() ) {
+		return false; }
+
+	// Don't affect visual builder.
+	if ( ! function_exists( 'et_core_is_fb_enabled' ) || et_core_is_fb_enabled() ) {
+		return false; }
+
+	// Don't affect single posts.
+	if ( is_singular() ) {
+		return false; }
+
+	// Don't affect secondary queries.
+	if ( ! $query->is_main_query() ) {
+		return false; }
+
+	// Don't affect Divi > Theme Options > General > Blog Style Mode, which shows full post content in loop.
+	if ( ! function_exists( 'et_get_option' ) || et_get_option( 'divi_blog_style', 'false' ) === 'on' ) {
+		return false; }
+
+	return true;
+}
+/**
+ * Finish up with the google maps script
+ *
+ * @since 0.1.0
+ */
+function fit_return_false() {
+	return false; }
+
+add_action( 'loop_start', 'fit_loop_start' );
+add_action( 'loop_end', 'fit_loop_end', 100 );
