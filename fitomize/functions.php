@@ -99,7 +99,7 @@ function fit_enqueue_styles() {
 	wp_enqueue_style( $parent_style, get_template_directory_uri() . '/style.css', array(), wp_get_theme()->get( 'Version' ) );
 
 	// register webpack stylesheet with theme.
-	wp_enqueue_style( 'child-style', get_stylesheet_directory_uri() . '/css/build/main.min.css', array( $parent_style ), wp_get_theme()->get( 'Version' ) );
+	wp_enqueue_style( 'child-style', get_stylesheet_directory_uri() . '/css/build/app.min.css', array( $parent_style ), wp_get_theme()->get( 'Version' ) );
 }
 add_action( 'wp_enqueue_scripts', 'fit_enqueue_styles' );
 
