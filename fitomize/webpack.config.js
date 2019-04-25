@@ -13,7 +13,7 @@ module.exports = {
     filename: './js/build/app.min.js',
     path: path.resolve(__dirname)
   },
-  devtool: 'source-map',
+  devtool: 'inline-source-map',
   module: {
     rules: [
       // perform js babelization on all .js files
