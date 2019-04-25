@@ -1,6 +1,8 @@
 const path = require('path')
 const webpack = require('webpack'); //to access built-in plugins
 
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin')
+
 // include the js minification plugin
 const TerserPlugin = require('terser-webpack-plugin')
 
@@ -51,6 +53,10 @@ module.exports = {
       protectWebpackAssets: true,
       cleanOnceBeforeBuildPatterns: ['**/build/*', '!**/node_modules/**/build/*'],
     }),
+    new BrowserSyncPlugin({
+      files: '**/*.php',
+      proxy: 'https://127.0.0.1:8443'
+    })
   ],
   optimization: {
     minimizer: [
