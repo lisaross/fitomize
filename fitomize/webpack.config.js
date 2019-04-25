@@ -1,7 +1,7 @@
 const path = require('path')
 
 // include the js minification plugin
-const UglifyJSPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 
 // include the css extraction and minification plugins
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
@@ -33,9 +33,7 @@ module.exports = {
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
-        use: [
-          'file-loader'
-        ]
+        use: ['file-loader']
       }
     ]
   },
@@ -48,9 +46,16 @@ module.exports = {
   optimization: {
     minimizer: [
       // enable the js minification plugin
-      new UglifyJSPlugin({
-        cache: true,
-        parallel: true
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            warnings: false
+          },
+          output: {
+            comments: false
+          }
+        },
+        sourceMap: true
       }),
       // enable the css minification plugin
       new OptimizeCSSAssetsPlugin({})
