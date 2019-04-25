@@ -9,6 +9,23 @@
     "watch": "webpack --mode development --watch",
     "dev": "webpack --mode development"
   },
+  "browserlist": [
+    "> 0.5%",
+    "last 2 versions",
+    "Firefox ESR",
+    "android 4",
+    "opera 12",
+    "ie >= 10",
+    "ie_mob >= 10",
+    "ff >= 30",
+    "chrome >= 34",
+    "safari >= 7",
+    "opera >= 23",
+    "ios >= 7",
+    "android >= 4.4",
+    "bb >= 10",
+    "not dead"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lisaross/fitomize.git"
