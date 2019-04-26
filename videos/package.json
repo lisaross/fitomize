@@ -1,0 +1,9 @@
+{
+  "name": "fit-videos",
+  "version": "0.1.0",
+  "description": "pull videos from digital ocean space for processing in mux",
+  "main": "index.js",
+  "repository": "https://github.com/lisaross/fitomize",
+  "author": "Lisa Ross",
+  "license": "MIT"
+}
