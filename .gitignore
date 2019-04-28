@@ -5,3 +5,4 @@
 /vendor
 [Bb]uild
 videos/node_modules
+*.env
